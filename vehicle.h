@@ -12,6 +12,7 @@
  * 
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
+ *      14NOV2021  R-11-14: Added entry constructor
  * 
  **/
 
@@ -28,7 +29,16 @@ class Vehicle
 {
 public:
     // Constructors
-    Vehicle(std::string id):vehicleID(id){}
+    Vehicle(std::string id, double mS, double mTS, double a, Node* src, Node* dest):
+        vehicleID(id), maxSpeed(mS), maxTurnSpeed(mTS), acceleration(a), source(src), destination(dest)
+        {
+            initialSpeed = source->speedLimit;
+            currentSpeed = initialSpeed;
+            initialAcceleration = 0;
+            currentAcceleration = 0;
+            currentTurning = false;
+            crashed = false;
+        }
 
     // Member Functions
     bool instruct(unsigned int instruction)
