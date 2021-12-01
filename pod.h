@@ -12,6 +12,7 @@
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
  *      30NOV2021  R-11-30: Added intersection square presence detection
+ *                          Adjusted update position methodology
  * 
  **/
 
@@ -39,9 +40,14 @@ public:
     }
 
     // Member Functions
-    void updatePosition()
+    void updatePosition(int speed, int cntdown = 0)
     {
-        position += vehicle->update();
+        move = speed > 0 ? true : false;
+        countdown = cntdown != 0 ? cntdown : ((countdown - 1) > 0 ? countdown - 1 : 0);
+        if (move)
+        {
+            position += vehicle->update(speed);
+        }
         updatePrediction();
         if (targetSet)
         {
@@ -75,6 +81,10 @@ public:
             return timeToIntersectionEntry;
         }
     }
+    
+    void setPositionInQueue(int pos){
+        positionInQueue = pos;
+    }
 
     // Getters
     std::string getPodID(){return podID;}
@@ -88,6 +98,7 @@ public:
     bool isTargetSet(){return targetSet;}
     double getTargetIntersectionEntry(){return targetIntersectionEntry;}
     double getTargetIntersectionExit(){return targetIntersectionExit;}
+    int getPositionInQueue(){return positionInQueue;}
 
 private:
     std::string podID;
@@ -101,6 +112,10 @@ private:
     double timeInIntersection;
     double timeToIntersectionExit;
 
+    // Instructors
+    bool move;
+    int countdown;
+
     // Targets
     bool targetSet;
     double targetIntersectionEntry;
@@ -108,6 +123,7 @@ private:
 
     // Status
     bool inIntersectionSquare;
+    int positionInQueue;
 };
 
 #endif
