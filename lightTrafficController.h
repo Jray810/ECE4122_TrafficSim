@@ -16,9 +16,6 @@
 #ifndef LIGHTTRAFFICCONTROLLER_H
 #define LIGHTTRAFFICCONTROLLER_H
 
-#define GREEN 0
-#define YELLOW 1
-
 #include "trafficController.h"
 
 class LightTrafficController: public TrafficController
