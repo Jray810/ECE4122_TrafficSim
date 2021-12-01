@@ -11,6 +11,7 @@
  * 
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
+ *      01DEC2021  R-12-01: Added getters for vector sizes
  * 
  **/
 
@@ -67,6 +68,16 @@ public:
             }
         }
         return NULL;
+    }
+
+    unsigned int getNumNodes()
+    {
+        return intersectionNodes.size();
+    }
+
+    unsigned int getNumLanes()
+    {
+        return intersectionLanes.size();
     }
 
 protected:
