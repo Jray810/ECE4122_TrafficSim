@@ -4,11 +4,13 @@
 #include "intersect4wsl.h"
 #include "autoTrafficController.h"
 #include "lightTrafficController.h"
+#include "stopTrafficController.h"
 
 #define DEFAULT_SPEED_LIMIT 1
 
 #define TEST_INTERSECTION 0
-#define TEST_ADDVEHICLES 1
+#define TEST_ADDVEHICLES 0
+#define TEST_STOPCONTROLLER 1
 
 #define AUTO    0
 #define LIGHT   1
@@ -53,13 +55,15 @@ int main(int argc, char *argv[])
     TrafficController* theTrafficController;
     switch (controllerType)
     {
-        case 0:
+        case AUTO:
             theTrafficController = new AutoTrafficController(theIntersection);
             break;
-        case 1:
+        case LIGHT:
             theTrafficController = new LightTrafficController(theIntersection);
             break;
-        case 2:
+        case STOP:
+            theTrafficController = new StopTrafficController(theIntersection);
+            break;
         default:
             theTrafficController = new AutoTrafficController(theIntersection);
             break;
@@ -116,6 +120,20 @@ int main(int argc, char *argv[])
         Vehicle* testVehicleB = new Vehicle("fred", 10, 10, 1, srcNode, destNode);
         theTrafficController->entryQueue.push(testVehicleB);
         std::this_thread::sleep_for(std::chrono::seconds(50));
+    }
+
+    // Test Stop Sign Controlled Traffic Controller
+    if (TEST_STOPCONTROLLER)
+    {
+        cout << "Testing Stop Sign Controlled Traffic Controller\n";
+        Vehicle* testVehicleA = new Vehicle("Alice", 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode("2"));
+        theTrafficController->entryQueue.push(testVehicleA);
+        Vehicle* testVehicleB = new Vehicle("Bob", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("3"));
+        theTrafficController->entryQueue.push(testVehicleB);
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        Vehicle* testVehicleC = new Vehicle("Carol", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("2"));
+        theTrafficController->entryQueue.push(testVehicleC);
+        std::this_thread::sleep_for(std::chrono::seconds(30));
     }
 
     // Cleanup
