@@ -11,6 +11,7 @@
  * 
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
+ *      30NOV2021  R-11-30: Added intersection square presence detection
  * 
  **/
 
@@ -34,6 +35,7 @@ public:
         targetSet = false;
         targetIntersectionEntry = -1;
         targetIntersectionExit = -1;
+        inIntersectionSquare = false;
     }
 
     // Member Functions
@@ -46,6 +48,7 @@ public:
             targetIntersectionEntry -= 1;
             targetIntersectionExit -= 1;
         }
+        inIntersectionSquare = (position > lane->getBeginIntersection() && position <= lane->getEndIntersection()) ? true : false;
     }
 
     void updatePrediction()
@@ -102,6 +105,9 @@ private:
     bool targetSet;
     double targetIntersectionEntry;
     double targetIntersectionExit;
+
+    // Status
+    bool inIntersectionSquare;
 };
 
 #endif
