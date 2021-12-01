@@ -13,8 +13,10 @@
  * 
  **/
 
-#include <iostream>
 #include "intersect4wsl.h"
+#include "trafficController.h"
+#include <iostream>
+#include <thread>
 
 #define DEFAULT_SPEED_LIMIT 40
 
@@ -27,14 +29,16 @@ int main(int argc, char *argv[])
 
     // World Setup Section
     Intersect4WSL* theIntersection = new Intersect4WSL(DEFAULT_SPEED_LIMIT);
-
+    TrafficController* theTrafficController = new TrafficController(theIntersection);
 
     // Start Operations
-
+    theTrafficController->startController();
 
     // End Operations
 
     // Cleanup
+    theTrafficController->stopController();
+    delete theTrafficController;
     delete theIntersection;
     return 0;
 }
