@@ -14,6 +14,7 @@
  *      14NOV2021  R-11-14: Document Created, initial coding
  *      14NOV2021  R-11-14: Added entry constructor
  *      30NOV2021  R-11-30: Added traffic controller boolean
+ *                          Adjusted position update methodology
  * 
  **/
 
@@ -74,8 +75,9 @@ public:
         }
     }
 
-    double update()
+    double update(int speed)
     {
+        /*
         double distTraveled = 0.5 * currentAcceleration * acceleration + currentSpeed;
 
         currentSpeed = currentAcceleration * acceleration + currentSpeed;
@@ -102,8 +104,11 @@ public:
                 currentSpeed = maxSpeed * -1;
             }
         }
+        */
+        currentSpeed = speed;
+        double distTraveled = currentSpeed;
 
-        return distTraveled;        
+        return distTraveled;
     }
 
     // Setters
