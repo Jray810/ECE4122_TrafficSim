@@ -13,6 +13,7 @@
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
  *      14NOV2021  R-11-14: Added entry constructor
+ *      30NOV2021  R-11-30: Added traffic controller boolean
  * 
  **/
 
@@ -38,6 +39,7 @@ public:
             currentAcceleration = 0;
             currentTurning = false;
             crashed = false;
+            underTrafficControl = false;
         }
 
     // Member Functions
@@ -110,6 +112,11 @@ public:
         currentTurning = turning;
     }
 
+    void setTrafficControl(bool control)
+    {
+        underTrafficControl = control;
+    }
+
     // Getters
     std::string getVehicleID(){return vehicleID;}
     double getMaxSpeed(){return maxSpeed;}
@@ -123,6 +130,7 @@ public:
     double getCurrentAcceleration(){return currentAcceleration;}
     bool isTurning(){return currentTurning;}
     bool isCrashed(){return crashed;}
+    bool isUnderTrafficControl(){return underTrafficControl;}
 
 protected:
     std::string vehicleID;
@@ -143,6 +151,9 @@ protected:
     double currentAcceleration;
     bool currentTurning;
     bool crashed;
+
+    // Vehicle Control
+    bool underTrafficControl;
 };
 
 #endif

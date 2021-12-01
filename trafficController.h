@@ -51,6 +51,7 @@ public:
 
     void schedulePod(Vehicle* entryVehicle)
     {
+        entryVehicle->setTrafficControl(true);
         std::string lane_id = entryVehicle->getSource()->nodeID + "-" + entryVehicle->getDestination()->nodeID;
         Lane* desiredLane = thisIntersection->getLane(lane_id);
         Pod* entryPod = new Pod(entryVehicle, desiredLane);
@@ -78,8 +79,20 @@ public:
         {
             for (auto it = controlledPods.begin(); it != controlledPods.end(); ++it)
             {
-                it->second->updatePosition();
-                std::cout << it->first << " : " << it->second->getPosition() << std::endl;
+                std::string podID = it->first;
+                Pod* thisPod = it->second;
+                thisPod->updatePosition();
+
+                // For debugging
+                std::cout << podID << " : " << thisPod->getPosition() << std::endl;
+
+                // Check if pod has left intersection
+                if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
+                {
+                    controlledPods.erase(it);
+                    thisPod->getVehicle()->setTrafficControl(false);
+                    delete thisPod;
+                }
             }
 
             // Update rate at approx UPDATE_GAP_MS between updates
