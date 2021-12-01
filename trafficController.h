@@ -10,6 +10,7 @@
  * 
  * Revision History:
  *      30NOV2021  R-11-30: Document Created, initial coding
+ *      01DEC2021  R-12-01: Convert class to abstract
  * 
  **/
 
@@ -24,7 +25,7 @@
 #include <queue>
 #include <map>
 
-#define UPDATE_GAP_MS 500
+#define UPDATE_GAP_MS 100
 
 class TrafficController
 {
@@ -33,6 +34,19 @@ public:
     TrafficController(Intersection* theIntersection):thisIntersection(theIntersection)
     {
         controllerActive = true;
+        for (int i=0; i<theIntersection->getNumNodes(); ++i)
+        {
+            for (int j=0; j<theIntersection->getNumNodes(); ++j)
+            {
+                if (i == j)
+                {
+                    continue;
+                }
+                std::string lane_id = std::to_string(i) + "-" + std::to_string(j);
+                std::deque<Pod*> thisLaneQueue;
+                laneQueues.insert({lane_id, thisLaneQueue});
+            }
+        }
     }
 
     // Destructors
@@ -49,16 +63,8 @@ public:
         controllerActive = false;
     }
 
-    void schedulePod(Vehicle* entryVehicle)
-    {
-        entryVehicle->setTrafficControl(true);
-        std::string lane_id = entryVehicle->getSource()->nodeID + "-" + entryVehicle->getDestination()->nodeID;
-        Lane* desiredLane = thisIntersection->getLane(lane_id);
-        Pod* entryPod = new Pod(entryVehicle, desiredLane);
-        controlledPods.insert({entryPod->getPodID(), entryPod});
-
-        // Give instructions to pod if necessary, to meet specified interesction entry time
-    }
+    virtual void schedulePod(Vehicle* entryVehicle) = 0;
+    virtual void doUpdate() = 0;
 
     // Thread Functions
     void entryCheck()
@@ -77,23 +83,7 @@ public:
     {
         while (controllerActive)
         {
-            for (auto it = controlledPods.begin(); it != controlledPods.end(); ++it)
-            {
-                std::string podID = it->first;
-                Pod* thisPod = it->second;
-                thisPod->updatePosition();
-
-                // For debugging
-                std::cout << podID << " : " << thisPod->getPosition() << std::endl;
-
-                // Check if pod has left intersection
-                if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
-                {
-                    controlledPods.erase(it);
-                    thisPod->getVehicle()->setTrafficControl(false);
-                    delete thisPod;
-                }
-            }
+            doUpdate();
 
             // Update rate at approx UPDATE_GAP_MS between updates
             std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_GAP_MS));
@@ -107,10 +97,11 @@ public:
 public:
     std::queue<Vehicle*> entryQueue;
 
-private:
+protected:
     bool controllerActive;
     Intersection* thisIntersection;
     std::map<std::string, Pod*> controlledPods;
+    std::map<std::string, std::deque<Pod*>> laneQueues;
 };
 
 #endif
