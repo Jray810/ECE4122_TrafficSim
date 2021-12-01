@@ -37,17 +37,28 @@ public:
         targetIntersectionEntry = -1;
         targetIntersectionExit = -1;
         inIntersectionSquare = false;
+        countdown = -1;
     }
 
     // Member Functions
-    void updatePosition(int speed, int cntdown = 0)
+    void updatePosition(int speed, int cntdown = -1)
     {
-        move = speed > 0 ? true : false;
-        countdown = cntdown != 0 ? cntdown : ((countdown - 1) > 0 ? countdown - 1 : 0);
+        if (cntdown != -1)
+        {
+            countdown = cntdown;
+        }
+        else if (countdown > 0)
+        {
+            countdown--;
+        }
+
+        move = (speed > 0) && (countdown <= 0) ? true : false;
+
         if (move)
         {
             position += vehicle->update(speed);
         }
+
         updatePrediction();
         if (targetSet)
         {
@@ -99,6 +110,7 @@ public:
     double getTargetIntersectionEntry(){return targetIntersectionEntry;}
     double getTargetIntersectionExit(){return targetIntersectionExit;}
     int getPositionInQueue(){return positionInQueue;}
+    int getCountdown(){return countdown;}
 
 private:
     std::string podID;
