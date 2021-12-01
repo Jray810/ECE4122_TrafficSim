@@ -11,6 +11,7 @@
  * 
  * Revision History:
  *      13NOV2021  R-11-13: Document Created, initial coding
+ *      30NOV2021  R-11-30: Added allowed lanes functionality
  * 
  **/
 
@@ -18,6 +19,7 @@
 #define LANE_H
 
 #include <string>
+#include <vector>
 
 struct Node
 {
@@ -76,6 +78,18 @@ public:
         return false;
     }
 
+    bool isAllowedLane(std::string id)
+    {
+        for (int i=0; i<allowedLanes.size(); ++i)
+        {
+            if (allowedLanes[i] == id)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Getters
     std::string getLaneID(){return laneID;}
     Node* getSource(){return source;}
@@ -84,6 +98,10 @@ public:
     unsigned int getBeginIntersection(){return beginIntersection;}
     unsigned int getEndIntersection(){return endIntersection;}
 
+    // Setters
+    void setLaneID(std::string lane_id){laneID = lane_id;}
+    void addAllowedLane(std::string lane_id){allowedLanes.push_back(lane_id);}
+
 private:
     std::string laneID;
     Node* source;
@@ -91,6 +109,7 @@ private:
     unsigned int laneLength;
     unsigned int beginIntersection;
     unsigned int endIntersection;
+    std::vector<std::string> allowedLanes;
 };
 
 #endif
