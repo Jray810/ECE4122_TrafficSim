@@ -11,6 +11,7 @@
  * Revision History:
  *      30NOV2021  R-11-30: Document Created, initial coding
  *      01DEC2021  R-12-01: Convert class to abstract
+ *      04DEC2021  R-12-04: Added lane queues, world queues, and mutexes
  * 
  **/
 
@@ -24,6 +25,7 @@
 #include <chrono>
 #include <queue>
 #include <map>
+#include <mutex>
 
 #define UPDATE_GAP_MS 100
 
@@ -34,18 +36,12 @@ public:
     TrafficController(Intersection* theIntersection):thisIntersection(theIntersection)
     {
         controllerActive = true;
+        globalTime = 0;
         for (int i=0; i<theIntersection->getNumNodes(); ++i)
         {
-            for (int j=0; j<theIntersection->getNumNodes(); ++j)
-            {
-                if (i == j)
-                {
-                    continue;
-                }
-                std::string lane_id = std::to_string(i) + "-" + std::to_string(j);
-                std::deque<Pod*> thisLaneQueue;
-                laneQueues.insert({lane_id, thisLaneQueue});
-            }
+            std::string src_node_id = std::to_string(i);
+            std::deque<Pod*> thisLaneQueue;
+            laneQueues.insert({src_node_id, thisLaneQueue});
         }
     }
 
@@ -73,8 +69,23 @@ public:
         {
             if (entryQueue.size() > 0)
             {
-                schedulePod(entryQueue.front());
-                entryQueue.pop();
+                // For debugging
+                // std::cout << "Entered Scheduler\n";
+
+                // Check vehicle is not being scheduled on top of another vehicle
+                std::map<std::string, std::deque<Pod*>>::iterator it = laneQueues.find(entryQueue.front()->getSource()->nodeID);
+                // Protect shared data
+                protectControlledPods.lock();
+                if (it->second.size() == 0 || globalTime > it->second.back()->getTimestamp())
+                {
+                    schedulePod(entryQueue.front());
+                    entryQueue.pop();
+                }
+                // Protect shared data
+                protectControlledPods.unlock();
+
+                // For debugging
+                // std::cout << "Exited Scheduler\n";
             }
         }
     }
@@ -83,7 +94,20 @@ public:
     {
         while (controllerActive)
         {
+            // For debugging
+            std::cout << "----\n";
+
+            // Protect shared data
+            protectControlledPods.lock();
+            
             doUpdate();
+            globalTime++;
+
+            // Protect shared data
+            protectControlledPods.unlock();
+            
+            // For debugging
+            std::cout << "----\n\n";
 
             // Update rate at approx UPDATE_GAP_MS between updates
             std::this_thread::sleep_for(std::chrono::milliseconds(UPDATE_GAP_MS));
@@ -102,6 +126,9 @@ protected:
     Intersection* thisIntersection;
     std::map<std::string, Pod*> controlledPods;
     std::map<std::string, std::deque<Pod*>> laneQueues;
+    std::deque<Pod*> worldQueue;
+    std::mutex protectControlledPods;
+    unsigned long int globalTime;
 };
 
 #endif
