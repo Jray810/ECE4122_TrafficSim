@@ -6,7 +6,7 @@
 #include "lightTrafficController.h"
 #include "stopTrafficController.h"
 
-#define DEFAULT_SPEED_LIMIT 1
+#define DEFAULT_SPEED_LIMIT 4
 
 #define TEST_INTERSECTION 0
 #define TEST_ADDVEHICLES 0
@@ -112,14 +112,14 @@ int main(int argc, char *argv[])
     if (TEST_ADDVEHICLES)
     {
         cout << "Testing Adding Vehicles\n";
-        Node* srcNode = theIntersection->getNode("0");
-        Node* destNode = theIntersection->getNode("3");
-        Vehicle* testVehicle = new Vehicle("bobby", 10, 10, 1, srcNode, destNode);
-        theTrafficController->entryQueue.push(testVehicle);
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        Vehicle* testVehicleB = new Vehicle("fred", 10, 10, 1, srcNode, destNode);
+        Vehicle* testVehicleA = new Vehicle("Alice", 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode("2"));
+        theTrafficController->entryQueue.push(testVehicleA);
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        Vehicle* testVehicleB = new Vehicle("Bob", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("3"));
         theTrafficController->entryQueue.push(testVehicleB);
-        std::this_thread::sleep_for(std::chrono::seconds(50));
+        Vehicle* testVehicleC = new Vehicle("Carol", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("2"));
+        theTrafficController->entryQueue.push(testVehicleC);
+        std::this_thread::sleep_for(std::chrono::seconds(30));
     }
 
     // Test Stop Sign Controlled Traffic Controller
@@ -130,7 +130,6 @@ int main(int argc, char *argv[])
         theTrafficController->entryQueue.push(testVehicleA);
         Vehicle* testVehicleB = new Vehicle("Bob", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("3"));
         theTrafficController->entryQueue.push(testVehicleB);
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
         Vehicle* testVehicleC = new Vehicle("Carol", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("2"));
         theTrafficController->entryQueue.push(testVehicleC);
         std::this_thread::sleep_for(std::chrono::seconds(30));
