@@ -13,6 +13,8 @@
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
  *      14NOV2021  R-11-14: Added entry constructor
+ *      30NOV2021  R-11-30: Added traffic controller boolean
+ *                          Adjusted position update methodology
  * 
  **/
 
@@ -38,6 +40,7 @@ public:
             currentAcceleration = 0;
             currentTurning = false;
             crashed = false;
+            underTrafficControl = false;
         }
 
     // Member Functions
@@ -72,8 +75,9 @@ public:
         }
     }
 
-    double update()
+    double update(int speed)
     {
+        /*
         double distTraveled = 0.5 * currentAcceleration * acceleration + currentSpeed;
 
         currentSpeed = currentAcceleration * acceleration + currentSpeed;
@@ -100,14 +104,22 @@ public:
                 currentSpeed = maxSpeed * -1;
             }
         }
+        */
+        currentSpeed = speed;
+        double distTraveled = currentSpeed;
 
-        return distTraveled;        
+        return distTraveled;
     }
 
     // Setters
     void setTurning(bool turning)
     {
         currentTurning = turning;
+    }
+
+    void setTrafficControl(bool control)
+    {
+        underTrafficControl = control;
     }
 
     // Getters
@@ -123,6 +135,7 @@ public:
     double getCurrentAcceleration(){return currentAcceleration;}
     bool isTurning(){return currentTurning;}
     bool isCrashed(){return crashed;}
+    bool isUnderTrafficControl(){return underTrafficControl;}
 
 protected:
     std::string vehicleID;
@@ -143,6 +156,9 @@ protected:
     double currentAcceleration;
     bool currentTurning;
     bool crashed;
+
+    // Vehicle Control
+    bool underTrafficControl;
 };
 
 #endif

@@ -11,6 +11,10 @@
  * 
  * Revision History:
  *      14NOV2021  R-11-14: Document Created, initial coding
+ *      30NOV2021  R-11-30: Added intersection square presence detection
+ *                          Adjusted update position methodology
+ *      04DEC2021  R-12-04: Added target entry handling
+ *                          to support autonomous control
  * 
  **/
 
@@ -25,83 +29,99 @@ class Pod
 {
 public:
     // Constructors
-    Pod(Vehicle* obj, Lane* ln):vehicle(obj), lane(ln)
+    Pod(Vehicle* obj, Lane* ln, unsigned long int timeAdded = -1):vehicle(obj), lane(ln)
     {
-        timestamp = time(NULL);
+        timestamp = timeAdded;
         podID = obj->getVehicleID();
         position = 0;
-        updatePrediction();
+        move = false;
+        countdown = -1;
         targetSet = false;
         targetIntersectionEntry = -1;
         targetIntersectionExit = -1;
+        timeInIntersection = -1;
+        inIntersectionSquare = false;
+        positionInQueue = -1;
     }
 
     // Member Functions
-    void updatePosition()
+    unsigned long int predictedEntry(unsigned long int currentTime)
     {
-        position += vehicle->update();
-        updatePrediction();
-        if (targetSet)
-        {
-            targetIntersectionEntry -= 1;
-            targetIntersectionExit -= 1;
-        }
+        double distance = lane->getBeginIntersection();
+        double speedLimit = lane->getSource()->speedLimit;
+        unsigned long int entryTime = currentTime + (distance / speedLimit);
+        return entryTime;
     }
 
-    void updatePrediction()
+    void updatePosition(int speed, int cntdown = -1)
     {
-        timeToIntersectionEntry = findTimeToPos(0, vehicle->getCurrentSpeed(), position, lane->getBeginIntersection());
-        timeInIntersection = findTimeToPos(0, vehicle->getCurrentSpeed(), lane->getBeginIntersection(), lane->getEndIntersection());
-        timeToIntersectionExit = timeToIntersectionEntry + timeInIntersection;
+        if (cntdown != -1)
+        {
+            countdown = cntdown;
+        }
+        else if (countdown > 0)
+        {
+            countdown--;
+        }
+
+        move = speed > 0;
+
+        if (move)
+        {
+            position += vehicle->update(speed);
+        }
+
+        inIntersectionSquare = (position > lane->getBeginIntersection() && position <= lane->getEndIntersection()) ? true : false;
     }
 
-    bool setTarget(double desiredEntry, double desiredExit)
+    void setTarget(unsigned long int desiredEntry, unsigned long int currentTime)
     {
-        // Code for determining whether desired targets are feasible
-        return false;
+        unsigned long int timeDiff = desiredEntry - currentTime;
+        countdown = 4*timeDiff - 4*(lane->getBeginIntersection()) / (lane->getSource()->speedLimit);
+        timeInIntersection = (lane->getEndIntersection() - lane->getBeginIntersection()) / lane->getDestination()->speedLimit;
+        targetIntersectionEntry = desiredEntry;
+        targetIntersectionExit = desiredEntry + timeInIntersection;
+        targetSet = true;
     }
-
-    double predictedEntry()
-    {
-        if (targetSet)
-        {
-            return targetIntersectionEntry;
-        }
-        else
-        {
-            return timeToIntersectionEntry;
-        }
+    
+    void setPositionInQueue(int pos){
+        positionInQueue = pos;
     }
 
     // Getters
     std::string getPodID(){return podID;}
-    time_t getTimestamp(){return timestamp;}
+    unsigned long int getTimestamp(){return timestamp;}
     Vehicle* getVehicle(){return vehicle;}
     Lane* getLane(){return lane;}
     double getPosition(){return position;}
-    double getTimeToIntersectionEntry(){return timeToIntersectionEntry;}
-    double getTimeInIntersection(){return timeInIntersection;}
-    double getTimeToIntersectionExit(){return timeToIntersectionExit;}
+    int getCountdown(){return countdown;}
     bool isTargetSet(){return targetSet;}
-    double getTargetIntersectionEntry(){return targetIntersectionEntry;}
-    double getTargetIntersectionExit(){return targetIntersectionExit;}
+    unsigned long int getEntry(){return targetIntersectionEntry;}
+    unsigned long int getExit(){return targetIntersectionExit;}
+    unsigned long int getTimeInIntersection(){return timeInIntersection;}
+    bool getInIntersectionSquare(){return inIntersectionSquare;}
+    int getPositionInQueue(){return positionInQueue;}
 
 private:
     std::string podID;
-    time_t timestamp;
+    unsigned long int timestamp;
     Vehicle* vehicle;
     Lane* lane;
     double position;
 
-    // Predictors
-    double timeToIntersectionEntry;
-    double timeInIntersection;
-    double timeToIntersectionExit;
+    // Instructors
+    bool move;
+    int countdown;
 
     // Targets
     bool targetSet;
-    double targetIntersectionEntry;
-    double targetIntersectionExit;
+    unsigned long int targetIntersectionEntry;
+    unsigned long int targetIntersectionExit;
+    unsigned long int timeInIntersection;
+
+    // Status
+    bool inIntersectionSquare;
+    int positionInQueue;
 };
 
 #endif
