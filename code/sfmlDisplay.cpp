@@ -99,10 +99,10 @@ int main(int argc, char *argv[])
     titleText.setPosition(WINDOW_XDIM / 2.0f, WINDOW_YDIM / 5.0f);
 
     // Create and Initialize Background Sprite
-    Texture texturebackground;
-    texturebackground.loadFromFile("graphics/background.png");
+    Texture textureBackground;
+    textureBackground.loadFromFile("graphics/background.png");
     Sprite spriteBackground;
-    spriteBackground.setTexture(texturebackground);
+    spriteBackground.setTexture(textureBackground);
     spriteBackground.setPosition(0,0);
 
     // Create and Initialize Vehicle Sprites
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     textureVehicleA.loadFromFile("graphics/vehicleA.png");
     Sprite spriteVehicleA;
     spriteVehicleA.setTexture(textureVehicleA);
-    spriteVehicleA.setPosition(160,40);
+    spriteVehicleA.setPosition(40,40);
     Texture textureVehicleB;
     textureVehicleB.loadFromFile("graphics/vehicleB.png");
     Sprite spriteVehicleB;
@@ -151,6 +151,13 @@ int main(int argc, char *argv[])
         control->startLightCycle();
     }
 
+    /**
+     * Draw Start Screen
+     **/
+    window.clear();
+    window.draw(spriteBackground);
+
+
     // Enter Display Loop
     while (window.isOpen())
     {
@@ -170,6 +177,7 @@ int main(int argc, char *argv[])
         window.clear();
         // Draw Background
         window.draw(spriteBackground);
+        window.draw(spriteVehicleA);
 
         // Draw Text
         window.draw(titleText);
@@ -187,4 +195,9 @@ void cleanup()
     theTrafficController->stopController();
     delete theTrafficController;
     delete theIntersection;
+}
+
+void vehicleSpawner()
+{
+    
 }
