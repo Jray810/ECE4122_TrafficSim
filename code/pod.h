@@ -42,6 +42,7 @@ public:
         timeInIntersection = -1;
         inIntersectionSquare = false;
         positionInQueue = -1;
+        obj->setPod(this);
     }
 
     // Member Functions
