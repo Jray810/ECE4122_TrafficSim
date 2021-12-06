@@ -41,6 +41,7 @@ public:
             currentTurning = false;
             crashed = false;
             underTrafficControl = false;
+            pod = NULL;
         }
 
     // Member Functions
@@ -122,8 +123,14 @@ public:
         underTrafficControl = control;
     }
 
+    void setPod(void* ptr)
+    {
+        pod = ptr;
+    }
+
     // Getters
     std::string getVehicleID(){return vehicleID;}
+    void* getPod(){return pod;}
     double getMaxSpeed(){return maxSpeed;}
     double getMaxTurnSpeed(){return maxTurnSpeed;}
     double getAcceleration(){return acceleration;}
@@ -139,6 +146,7 @@ public:
 
 protected:
     std::string vehicleID;
+    void* pod;
 
     // Vehicle Properties
     double maxSpeed;
