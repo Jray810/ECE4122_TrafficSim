@@ -50,6 +50,7 @@ public:
     ~Pod()
     {
         vehicle->setPod(NULL);
+        vehicle->exit();
     }
 
     // Member Functions

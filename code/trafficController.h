@@ -26,6 +26,7 @@
 #include <queue>
 #include <map>
 #include <mutex>
+#include <omp.h>
 
 #define UPDATE_GAP_MS 100
 

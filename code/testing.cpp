@@ -10,7 +10,8 @@
 
 #define TEST_INTERSECTION 0
 #define TEST_ADDVEHICLES 0
-#define TEST_STOPCONTROLLER 1
+#define TEST_STOPCONTROLLER 0
+#define TEST_TRAFFICJAM 1
 
 #define AUTO    0
 #define LIGHT   1
@@ -133,6 +134,18 @@ int main(int argc, char *argv[])
         Vehicle* testVehicleC = new Vehicle("Carol", 10, 10, 1, theIntersection->getNode("1"), theIntersection->getNode("2"));
         theTrafficController->entryQueue.push(testVehicleC);
         std::this_thread::sleep_for(std::chrono::seconds(30));
+    }
+
+    // Test Traffic Jame
+    if (TEST_TRAFFICJAM)
+    {
+        cout << "Testing Traffic Jam\n";
+        for (int i=0; i<10; ++i)
+        {
+            Vehicle* testVehicle = new Vehicle(, 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode(std::to_string(dest)));
+            theTrafficController->entryQueue.push(testVehicle);
+            std::this_thread::sleep_for(std::chrono::seconds(30));
+        }
     }
 
     // Cleanup

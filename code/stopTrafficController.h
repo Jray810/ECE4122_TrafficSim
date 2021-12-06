@@ -65,10 +65,6 @@ public:
             // For debugging
             std::cout << podID << " : " << thisPod->getPosition() << std::endl;
 
-            // Movement Logic
-            int mvmtSpeed;
-            int countdown = -1;
-
             // Check if pod has left intersection control
             if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
             {
