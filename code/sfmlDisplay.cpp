@@ -16,6 +16,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
+#include <stdlib.h>
+#include <time.h>
 #include "intersect4wsl.h"
 #include "autoTrafficController.h"
 #include "lightTrafficController.h"
@@ -34,6 +36,9 @@ unsigned int controllerType;
 // Default Speed Limit
 #define DEFAULT_SPEED_LIMIT 4
 
+// Spawn Chance
+#define PROBABILITY 5
+
 // Fonts
 sf::Font thinFont;
 sf::Font regFont;
@@ -42,7 +47,9 @@ sf::Font boldFont;
 // Global Variables
 Intersect4WSL* theIntersection;
 TrafficController* theTrafficController;
-std::map<std::string, Vehicle*> VehicleCollection;
+sf::Texture textureCollection[7];
+std::map<std::string, Vehicle*> vehicleCollection;
+std::map<std::string, sf::Sprite*> spriteCollection;
 
 struct Coord
 {
@@ -52,10 +59,11 @@ struct Coord
 };
 
 void cleanup();
+void vehicleSpawner();
 Coord getPos(std::string lane_id, double t);
-Coord getPosRight(unsigned int lane, double t);
-Coord getPosStraight(unsigned int lane, double t);
-Coord getPosLeft(unsigned int lane, double t);
+Coord getPosRight(unsigned int lane, double t, double s);
+Coord getPosStraight(unsigned int lane, double t, double s);
+Coord getPosLeft(unsigned int lane, double t, double s);
 
 using namespace sf;
 
@@ -64,6 +72,9 @@ using namespace sf;
  **/
 int main(int argc, char *argv[])
 {
+    // Seed RNG
+    srand(time(NULL));
+
     // Command Line Argument Detection
     if (argc == 1)
     {
@@ -118,42 +129,17 @@ int main(int argc, char *argv[])
     spriteBackground.setTexture(textureBackground);
     spriteBackground.setPosition(0,0);
 
-    // Create and Initialize Vehicle Sprites
-    Texture textureVehicleA;
-    textureVehicleA.loadFromFile("graphics/vehicleA.png");
-    Sprite spriteVehicleA;
-    spriteVehicleA.setTexture(textureVehicleA);
-    spriteVehicleA.setPosition(40,40);
-    Texture textureVehicleB;
-    textureVehicleB.loadFromFile("graphics/vehicleB.png");
-    Sprite spriteVehicleB;
-    spriteVehicleB.setTexture(textureVehicleB);
-    spriteVehicleB.setPosition(160,40);
-    Texture textureVehicleC;
-    textureVehicleC.loadFromFile("graphics/vehicleC.png");
-    Sprite spriteVehicleC;
-    spriteVehicleC.setTexture(textureVehicleC);
-    spriteVehicleC.setPosition(160,40);
-    Texture textureVehicleD;
-    textureVehicleD.loadFromFile("graphics/vehicleD.png");
-    Sprite spriteVehicleD;
-    spriteVehicleD.setTexture(textureVehicleD);
-    spriteVehicleD.setPosition(160,40);
-
-    // Adjust Scaling
-    spriteVehicleA.setScale(Vector2f(0.3f, 0.3f));
-    spriteVehicleB.setScale(Vector2f(0.3f, 0.3f));
-    spriteVehicleC.setScale(Vector2f(0.3f, 0.3f));
-    spriteVehicleD.setScale(Vector2f(0.3f, 0.3f));
-
-    // Set Origin
-    spriteVehicleA.setOrigin(30, 59);
-    spriteVehicleB.setOrigin(30, 59);
-    spriteVehicleC.setOrigin(30, 59);
-    spriteVehicleD.setOrigin(30, 59);
+    // Create Vehicle Textures
+    for (int i=0; i<7; ++i)
+    {
+        Texture textureVehicle;
+        textureVehicle.loadFromFile("graphics/vehicle" + std::to_string(i) + ".png");
+        textureCollection[i] = textureVehicle;
+    }
 
     // Setup Environment
-    theIntersection = new Intersect4WSL(DEFAULT_SPEED_LIMIT);
+    double speedLimit = controllerType == STOP ? 1 : DEFAULT_SPEED_LIMIT;
+    theIntersection = new Intersect4WSL(speedLimit);
     switch (controllerType)
     {
         case AUTO:
@@ -184,8 +170,7 @@ int main(int argc, char *argv[])
     window.draw(titleText);
     window.display();
 
-    double t = 0;
-    double s = 8;
+    double s = 6;
 
     // Enter Display Loop
     while (window.isOpen())
@@ -199,37 +184,41 @@ int main(int argc, char *argv[])
             window.close();
         }
 
+        // Spawn a Vehicle
+        vehicleSpawner();
+
         /**
          * Draw everything
          **/
         // Clear Window
         window.clear();
+
         // Draw Background
         window.draw(spriteBackground);
-        Coord posA = getPos("0-1", t);
-        Coord posB = getPos("0-2", t);
-        Coord posC = getPos("0-3", t);
-        Coord posD = getPos("2-0", t);
-        spriteVehicleA.setPosition(WINDOW_XDIM/2 + posA.x*s, WINDOW_YDIM/2 + posA.y*s);
-        spriteVehicleB.setPosition(WINDOW_XDIM/2 + posB.x*s, WINDOW_YDIM/2 + posB.y*s);
-        spriteVehicleC.setPosition(WINDOW_XDIM/2 + posC.x*s, WINDOW_YDIM/2 + posC.y*s);
-        spriteVehicleD.setPosition(WINDOW_XDIM/2 + posD.x*s, WINDOW_YDIM/2 + posD.y*s);
-        spriteVehicleA.setRotation(posA.r);
-        spriteVehicleB.setRotation(posB.r);
-        spriteVehicleC.setRotation(posC.r);
-        spriteVehicleD.setRotation(posD.r);
-        window.draw(spriteVehicleA);
-        window.draw(spriteVehicleB);
-        window.draw(spriteVehicleC);
-        window.draw(spriteVehicleD);
+
+        // Draw Vehicles
+        std::map<std::string, Vehicle*>::iterator next_it = vehicleCollection.begin();
+        for (std::map<std::string, Vehicle*>::iterator it = vehicleCollection.begin(); it != vehicleCollection.end(); it = next_it)
+        {
+            ++next_it;
+            std::string vehicle_id = it->first;
+            Pod* podPtr = (Pod*)(it->second->getPod());
+            if (podPtr == NULL)
+            {
+                continue;
+            }
+            Coord pos = getPos(podPtr->getLane()->getLaneID(), podPtr->getPosition());
+            Sprite* vehicleSprite = spriteCollection.find(vehicle_id)->second;
+            vehicleSprite->setPosition(WINDOW_XDIM/2 + pos.x*s, WINDOW_YDIM/2 + pos.y*s);
+            vehicleSprite->setRotation(pos.r);
+            window.draw(*vehicleSprite);
+        }
 
         // Draw Text
         window.draw(titleText);
+
         // Display Window
         window.display();
-
-        t += 0.1;
-        if (t > 100) {t = 0;}
     }
 
     // Cleanup
@@ -246,46 +235,69 @@ void cleanup()
 
 void vehicleSpawner()
 {
+    // Spawn at spawn chance probability
+    if (rand() % 100 > PROBABILITY)
+    {
+        return;
+    }
+
     // Spawn one vehicle
-    std::string randomizedID;
-    unsigned int src;
-    unsigned int dest;
+    std::string randomizedID = "";
+    for (int i=0; i<10; ++i)
+    {
+        randomizedID += std::to_string(rand() % 10);
+    }
+    unsigned int src = rand() % theIntersection->getNumNodes();
+    unsigned int dest = rand() % theIntersection->getNumNodes();
+    if (src == dest)
+    {
+        return;
+    }
+    unsigned int carType = rand() % 7;
     Vehicle* newVehicle = new Vehicle(randomizedID, 10, 10, 1, theIntersection->getNode(std::to_string(src)), theIntersection->getNode(std::to_string(dest)));
-    VehicleCollection.insert({newVehicle->getVehicleID(), newVehicle});
+    vehicleCollection.insert({newVehicle->getVehicleID(), newVehicle});
+    Sprite* spriteVehicle = new Sprite;
+    spriteVehicle->setTexture(textureCollection[carType]);
+    spriteVehicle->setScale(Vector2f(0.3f, 0.3f));
+    spriteVehicle->setOrigin(30, 59);
+    spriteCollection.insert({newVehicle->getVehicleID(), spriteVehicle});
+    theTrafficController->entryQueue.push(newVehicle);
 }
 
 // Gives offset from center of intersection
 Coord getPos(std::string lane_id, double t)
 {
+    double scale = 6;
+
     Coord position;
 
     if (lane_id == "0-1" || lane_id == "1-2" || lane_id == "2-3" || lane_id == "3-0")
     {
         unsigned int src = lane_id[0]-'0';
-        position = getPosRight(src, t);
+        position = getPosRight(src, t, scale);
     }
     else if (lane_id == "0-2" || lane_id == "1-3" || lane_id == "2-0" || lane_id == "3-1")
     {
         unsigned int src = lane_id[0]-'0';
-        position = getPosStraight(src, t);
+        position = getPosStraight(src, t, scale);
     }
     else
     {
         unsigned int src = lane_id[0]-'0';
-        position = getPosLeft(src, t);
+        position = getPosLeft(src, t, scale);
     }
 
     return position;
 }
 
 // Right Turn Position Calculator
-Coord getPosRight(unsigned int lane, double t)
+Coord getPosRight(unsigned int lane, double t, double s)
 {
     Coord position;
 
     if (t < 40)
     {
-        position.x = -1 * (40-t);
+        position.x = -1 * (40-t) * s;
         position.y = -1 * 7;
     }
     else if (t <= 60)
@@ -296,7 +308,7 @@ Coord getPosRight(unsigned int lane, double t)
     else
     {
         position.x = 7;
-        position.y = t-60;
+        position.y = (t-60) * s;
     }
 
     double tmp;
@@ -349,18 +361,18 @@ Coord getPosRight(unsigned int lane, double t)
     }
     else if (t >= 40)
     {
-        std::cout << "shiet\n";
+        // std::cout << "shiet\n";
     }
 
     return position;
 }
 
 // Straight Position Calculator
-Coord getPosStraight(unsigned int lane, double t)
+Coord getPosStraight(unsigned int lane, double t, double s)
 {
     Coord position;
 
-    double a = t-50;
+    double a = (t-50) * s;
     double b = 3;
 
     switch (lane)
@@ -394,13 +406,13 @@ Coord getPosStraight(unsigned int lane, double t)
 }
 
 // Left Position Calculator
-Coord getPosLeft(unsigned int lane, double t)
+Coord getPosLeft(unsigned int lane, double t, double s)
 {
     Coord position;
 
     if (t < 40)
     {
-        position.x = -1 * (40-t);
+        position.x = -1 * (40-t) * s;
         position.y = 13;
     }
     else if (t <= 60)
@@ -411,7 +423,7 @@ Coord getPosLeft(unsigned int lane, double t)
     else
     {
         position.x = 13;
-        position.y = 60-t;
+        position.y = (60-t) * s;
     }
 
     double tmp;
@@ -462,7 +474,7 @@ Coord getPosLeft(unsigned int lane, double t)
     }
     else if (t >= 40)
     {
-        std::cout << "shiet\n";
+        // std::cout << "shiet\n";
     }
 
     return position;
