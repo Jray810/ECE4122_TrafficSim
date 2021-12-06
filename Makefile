@@ -1,11 +1,11 @@
 all: trafficSim
 
 trafficSim:
-	g++ *.h main.cpp -lpthread
+	g++ code/*.h code/main.cpp -lpthread -o trafficSim
 
 testing:
-	g++ *.h testing.cpp -lpthread
+	g++ code/*.h code/testing.cpp -lpthread -o testingSim
 
 clean:
-	rm a.out
-	rm *.gch
+	rm *Sim
+	rm code/*.gch
