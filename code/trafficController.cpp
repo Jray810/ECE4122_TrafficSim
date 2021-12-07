@@ -6,7 +6,7 @@
  * Final Project - Autonomous Traffic Simulator
  * 
  * Description:
- *      Function implementation for trafficController class
+ *      Function implementation for TrafficController class
  * 
  * Revision History:
  *      30NOV2021  R-11-30: Document Created, initial coding
