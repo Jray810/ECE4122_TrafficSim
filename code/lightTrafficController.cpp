@@ -6,8 +6,8 @@
  * Final Project - Autonomous Traffic Simulator
  * 
  * Description:
- *      Light Traffic Controller class simulates an intersection with traffic lights.
- *      This class is currently a work in progress.
+ *      Function implementation for LightTrafficController class
+ *      WORK IN PROGRESS
  * 
  * Revision History:
  *      01DEC2021  R-12-01: Document Created, initial coding
