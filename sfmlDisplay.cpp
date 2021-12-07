@@ -15,14 +15,14 @@
  * 
  **/
 
-#include "debugSetup.h"
+#include "code/debugSetup.h"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 
-#include "intersect4wsl.h"
-#include "autoTrafficController.h"
-#include "lightTrafficController.h"
-#include "stopTrafficController.h"
+#include "code/intersect4wsl.h"
+#include "code/autoTrafficController.h"
+#include "code/lightTrafficController.h"
+#include "code/stopTrafficController.h"
 
 
 // Window Dimension Constants

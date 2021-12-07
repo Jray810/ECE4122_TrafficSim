@@ -17,12 +17,12 @@
  * 
  **/
 
-#include "debugSetup.h"
+#include "code/debugSetup.h"
 
-#include "intersect4wsl.h"
-#include "autoTrafficController.h"
-#include "lightTrafficController.h"
-#include "stopTrafficController.h"
+#include "code/intersect4wsl.h"
+#include "code/autoTrafficController.h"
+#include "code/lightTrafficController.h"
+#include "code/stopTrafficController.h"
 
 // Default Speed Limit
 #define DEFAULT_SPEED_LIMIT 4
@@ -58,9 +58,6 @@ std::vector<Vehicle*> vehicleCollection;
 // Let's run some tests!
 int main(int argc, char *argv[])
 {
-    // Set debug to true
-    DEBUG = true;
-
     /**
      * Command Line Argument Processing
      **/
