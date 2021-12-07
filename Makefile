@@ -10,7 +10,7 @@ sfml:
 	# ./sfmlSim -S
 
 testing:
-	g++ code/*.h code/testing.cpp -lpthread -fopenmp -o testingSim
+	g++ code/*.h code/*.cpp testing.cpp -lpthread -fopenmp -o testingSim
 	# ./testingSim -S
 
 clean:
