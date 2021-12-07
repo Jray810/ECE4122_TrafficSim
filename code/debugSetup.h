@@ -22,6 +22,8 @@
 #include <chrono>
 #include <stdlib.h>
 #include <time.h>
+#include <string>
+#include <vector>
 
 #define DEBUG 0
 
