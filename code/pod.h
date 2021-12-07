@@ -51,7 +51,8 @@ public:
     {
         vehicle->setTrafficControl(false);
         vehicle->setPod(NULL);
-        vehicle->exit();
+        waitTime = exitstamp - timestamp - 50;
+        vehicle->exit(waitTime);
     }
 
     // Member Functions
@@ -94,8 +95,14 @@ public:
         targetSet = true;
     }
     
-    void setPositionInQueue(int pos){
+    void setPositionInQueue(int pos)
+    {
         positionInQueue = pos;
+    }
+
+    void setExitStamp(unsigned long int exit)
+    {
+        exitstamp = exit;
     }
 
     // Getters
@@ -115,6 +122,8 @@ public:
 private:
     std::string podID;
     unsigned long int timestamp;
+    unsigned long int exitstamp;
+    unsigned long int waitTime;
     Vehicle* vehicle;
     Lane* lane;
     double position;

@@ -18,8 +18,13 @@
 #define AUTO    0
 #define LIGHT   1
 #define STOP    2
-
 unsigned int controllerType;
+
+// Default Speed Limit
+#define DEFAULT_SPEED_LIMIT 4
+
+// Default Tick Speed
+#define DEFAULT_TICK_MICROS 1000000
 
 using namespace std;
 
@@ -29,6 +34,7 @@ int main(int argc, char *argv[])
     srand(time(NULL));
 
     // Command Line Argument Detection
+    tickSpeed = DEFAULT_TICK_MICROS;
     if (argc == 1)
     {
         controllerType = 0;
@@ -55,23 +61,29 @@ int main(int argc, char *argv[])
                 break;
         }
     }
+    if (argc >= 3)
+    {
+        std::string typeArg = argv[2];
+        tickSpeed = stoi(typeArg);
+    }
+
 
     // Setup testing environment
-    Intersect4WSL* theIntersection = new Intersect4WSL(DEFAULT_SPEED_LIMIT);
-    TrafficController* theTrafficController;
+    double speedLimit = controllerType == STOP ? 1 : DEFAULT_SPEED_LIMIT;
+    theIntersection = new Intersect4WSL(speedLimit);
     switch (controllerType)
     {
         case AUTO:
-            theTrafficController = new AutoTrafficController(theIntersection);
+            theTrafficController = new AutoTrafficController(theIntersection, tickSpeed);
             break;
         case LIGHT:
-            theTrafficController = new LightTrafficController(theIntersection);
+            theTrafficController = new LightTrafficController(theIntersection, tickSpeed);
             break;
         case STOP:
-            theTrafficController = new StopTrafficController(theIntersection);
+            theTrafficController = new StopTrafficController(theIntersection, tickSpeed);
             break;
         default:
-            theTrafficController = new AutoTrafficController(theIntersection);
+            theTrafficController = new AutoTrafficController(theIntersection, tickSpeed);
             break;
     }
     theTrafficController->startController();
@@ -147,8 +159,9 @@ int main(int argc, char *argv[])
         cout << "Testing Traffic Jam\n";
         for (int i=0; i<10; ++i)
         {
-            int dest = (rand() % 3) + 1;
-            Vehicle* testVehicle = new Vehicle(std::to_string(i), 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode(std::to_string(dest)));
+            int dest = (rand() % 2) + 2;
+            int l = rand() % 2;
+            Vehicle* testVehicle = new Vehicle(std::to_string(i) + std::to_string(l), 10, 10, 1, theIntersection->getNode(std::to_string(l)), theIntersection->getNode(std::to_string(dest)));
             theTrafficController->entryQueue.push(testVehicle);
         }
         std::this_thread::sleep_for(std::chrono::seconds(30));

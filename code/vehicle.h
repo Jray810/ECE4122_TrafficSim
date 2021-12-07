@@ -131,14 +131,16 @@ public:
         pod = ptr;
     }
 
-    void exit()
+    void exit(unsigned long int wait)
     {
         exited = true;
+        waitTime = wait;
     }
 
     // Getters
     std::string getVehicleID(){return vehicleID;}
     void* getPod(){return pod;}
+    double getWaitTime(){return waitTime;}
     double getMaxSpeed(){return maxSpeed;}
     double getMaxTurnSpeed(){return maxTurnSpeed;}
     double getAcceleration(){return acceleration;}
@@ -156,6 +158,7 @@ public:
 protected:
     std::string vehicleID;
     void* pod;
+    double waitTime;
 
     // Vehicle Properties
     double maxSpeed;
