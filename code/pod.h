@@ -40,7 +40,7 @@ public:
         targetSet = false;
         targetIntersectionEntry = -1;
         targetIntersectionExit = -1;
-        timeInIntersection = -1;
+        timeInIntersection = (ln->getEndIntersection() - ln->getBeginIntersection()) / ln->getDestination()->speedLimit;
         inIntersectionSquare = false;
         positionInQueue = -1;
         obj->setPod(this);
@@ -51,7 +51,8 @@ public:
     {
         vehicle->setTrafficControl(false);
         vehicle->setPod(NULL);
-        vehicle->exit();
+        waitTime = exitstamp - timestamp - 12;
+        vehicle->exit(waitTime);
     }
 
     // Member Functions
@@ -88,14 +89,19 @@ public:
     {
         unsigned long int timeDiff = desiredEntry - currentTime;
         countdown = 4*timeDiff - 4*(lane->getBeginIntersection()) / (lane->getSource()->speedLimit);
-        timeInIntersection = (lane->getEndIntersection() - lane->getBeginIntersection()) / lane->getDestination()->speedLimit;
         targetIntersectionEntry = desiredEntry;
         targetIntersectionExit = desiredEntry + timeInIntersection;
         targetSet = true;
     }
     
-    void setPositionInQueue(int pos){
+    void setPositionInQueue(int pos)
+    {
         positionInQueue = pos;
+    }
+
+    void setExitStamp(unsigned long int exit)
+    {
+        exitstamp = exit;
     }
 
     // Getters
@@ -115,6 +121,8 @@ public:
 private:
     std::string podID;
     unsigned long int timestamp;
+    unsigned long int exitstamp;
+    unsigned long int waitTime;
     Vehicle* vehicle;
     Lane* lane;
     double position;

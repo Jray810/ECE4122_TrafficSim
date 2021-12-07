@@ -22,7 +22,7 @@ class LightTrafficController: public TrafficController
 {
 public:
     // Constructors
-    LightTrafficController(Intersection* theIntersection):TrafficController(theIntersection){}
+    LightTrafficController(Intersection* theIntersection, unsigned int tickSpeed):TrafficController(theIntersection, tickSpeed){}
 
     // Member Functions
     void schedulePod(Vehicle* entryVehicle)
@@ -32,7 +32,7 @@ public:
         Lane* desiredLane = thisIntersection->getLane(lane_id);
         Pod* entryPod = new Pod(entryVehicle, desiredLane);
         controlledPods.push_back(entryPod);
-        std::map<std::string, std::deque<Pod*>>::iterator it = laneQueues.find(lane_id);
+        std::map<std::string, std::vector<Pod*>>::iterator it = laneQueues.find(lane_id);
         it->second.push_back(entryPod);
         for (int i=0; i<it->second.size(); ++i)
         {
@@ -46,7 +46,7 @@ public:
         bool leaveControl = false;
 
         // For debugging
-        std::cout << "----\n";
+        // std::cout << "----\n";
 
         for (int i=0; i<controlledPods.size(); ++i)
         {
@@ -73,23 +73,23 @@ public:
                 {
                     // Yellow or Red, Check position
                     double stopTarget = thisPod->getLane()->getBeginIntersection() - thisPod->getPositionInQueue();
-                    std::cout << "Stop Target: " << stopTarget << std::endl;
+                    // std::cout << "Stop Target: " << stopTarget << std::endl;
                     mvmtSpeed = thisPod->getPosition() < stopTarget ? thisPod->getLane()->getSource()->speedLimit : 0;
                 }
             }
             thisPod->updatePosition(mvmtSpeed);
 
             // For debugging
-            std::cout << thisPod->getPodID() << " : " << thisPod->getPosition() << std::endl;
+            // std::cout << thisPod->getPodID() << " : " << thisPod->getPosition() << std::endl;
 
             // Check if pod has gone through intersection square
             if (thisPod->getPosition() > thisPod->getLane()->getEndIntersection())
             {
-                std::map<std::string, std::deque<Pod*>>::iterator laneIt = laneQueues.find(thisPod->getLane()->getLaneID());
+                std::map<std::string, std::vector<Pod*>>::iterator laneIt = laneQueues.find(thisPod->getLane()->getLaneID());
                 Pod* firstPod = laneIt->second.front();
                 if (firstPod != NULL && firstPod->getPodID() == thisPod->getPodID())
                 {
-                    laneIt->second.pop_front();
+                    laneIt->second.erase(laneIt->second.begin());
                     for (int i=0; i<laneIt->second.size(); ++i)
                     {
                         laneIt->second[i]->setPositionInQueue(i);
@@ -101,6 +101,7 @@ public:
             if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
             {
                 controlledPods[i] = NULL;
+                thisPod->setExitStamp(globalTime);
                 delete thisPod;
                 leaveControl = true;
             }
@@ -108,7 +109,7 @@ public:
 
         if (popWorld)
         {
-            worldQueue.pop_front();
+            worldQueue.erase(worldQueue.begin());
         }
 
         if (leaveControl)
@@ -124,7 +125,7 @@ public:
         }
 
         // For debugging
-        std::cout << "----\n\n";
+        // std::cout << "----\n\n";
     }
 
     void startLightCycle()

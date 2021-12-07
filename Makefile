@@ -1,11 +1,18 @@
 all: trafficSim
 
 trafficSim:
-	g++ code/*.h code/main.cpp -lpthread -o trafficSim
+	g++ code/*.h code/main.cpp -lpthread -fopenmp -o trafficSim
+	./trafficSim
+
+sfml:
+	export DISPLAY=:0.0
+	g++ code/*.h code/sfmlDisplay.cpp -lpthread -fopenmp -lsfml-graphics -lsfml-window -lsfml-system -o sfmlSim
+	./sfmlSim -S
 
 testing:
-	g++ code/*.h code/testing.cpp -lpthread -o testingSim
+	g++ code/*.h code/testing.cpp -lpthread -fopenmp -o testingSim
+	./testingSim -S
 
 clean:
-	rm *Sim
 	rm code/*.gch
+	rm *Sim

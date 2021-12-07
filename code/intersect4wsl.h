@@ -16,9 +16,9 @@
 #ifndef INTERSECT4WSL_H
 #define INTERSECT4WSL_H
 
-#define DEFAULT_LANE_LENGTH 100
-#define DEFAULT_INTERSECTION_START 40
-#define DEFAULT_INTERSECTION_END 60
+#define DEFAULT_LANE_LENGTH 50
+#define DEFAULT_INTERSECTION_START 20
+#define DEFAULT_INTERSECTION_END 30
 
 #include "intersection.h"
 #include <iostream>
@@ -84,8 +84,8 @@ public:
                     case -1:
                         lane_id = std::to_string((i+1)%4) + "-" + std::to_string((j+3)%4);
                         thisLane->addAllowedLane(lane_id);
-                        lane_id = std::to_string((i+2)%4) + "-" + std::to_string((j+2)%4);
-                        thisLane->addAllowedLane(lane_id);
+                        // lane_id = std::to_string((i+2)%4) + "-" + std::to_string((j+2)%4);
+                        // thisLane->addAllowedLane(lane_id);
                         lane_id = std::to_string((i+3)%4) + "-" + std::to_string((j+1)%4);
                         thisLane->addAllowedLane(lane_id);
                         break;
