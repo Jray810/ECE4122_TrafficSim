@@ -22,7 +22,6 @@
 #ifndef POD_H
 #define POD_H
 
-#include "calc.h"
 #include "vehicle.h"
 #include <ctime>
 
