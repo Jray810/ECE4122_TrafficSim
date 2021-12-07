@@ -25,7 +25,6 @@
 #include "lightTrafficController.h"
 #include "stopTrafficController.h"
 
-// Include DEBUGMODE flag
 #include "debugSetup.h"
 
 // Window Dimension Constants
