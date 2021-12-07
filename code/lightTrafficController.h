@@ -31,7 +31,7 @@ public:
         std::string lane_id = entryVehicle->getSource()->nodeID + "-" + entryVehicle->getDestination()->nodeID;
         Lane* desiredLane = thisIntersection->getLane(lane_id);
         Pod* entryPod = new Pod(entryVehicle, desiredLane);
-        controlledPods.insert({entryPod->getPodID(), entryPod});
+        controlledPods.push_back(entryPod);
         std::map<std::string, std::deque<Pod*>>::iterator it = laneQueues.find(lane_id);
         it->second.push_back(entryPod);
         for (int i=0; i<it->second.size(); ++i)
@@ -42,13 +42,15 @@ public:
 
     void doUpdate()
     {
+        bool popWorld = false;
+        bool leaveControl = false;
+
         // For debugging
         std::cout << "----\n";
 
-        for (auto it = controlledPods.begin(); it != controlledPods.end(); ++it)
+        for (int i=0; i<controlledPods.size(); ++i)
         {
-            std::string podID = it->first;
-            Pod* thisPod = it->second;
+            Pod* thisPod = controlledPods[i];
 
             // Movement logic
             std::string lane_id = thisPod->getLane()->getLaneID();
@@ -78,7 +80,7 @@ public:
             thisPod->updatePosition(mvmtSpeed);
 
             // For debugging
-            std::cout << podID << " : " << thisPod->getPosition() << std::endl;
+            std::cout << thisPod->getPodID() << " : " << thisPod->getPosition() << std::endl;
 
             // Check if pod has gone through intersection square
             if (thisPod->getPosition() > thisPod->getLane()->getEndIntersection())
@@ -98,14 +100,26 @@ public:
             // Check if pod has left intersection
             if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
             {
-                controlledPods.erase(it);
-                thisPod->getVehicle()->setTrafficControl(false);
+                controlledPods[i] = NULL;
                 delete thisPod;
+                leaveControl = true;
             }
+        }
 
-            if (controlledPods.empty())
+        if (popWorld)
+        {
+            worldQueue.pop_front();
+        }
+
+        if (leaveControl)
+        {
+            for (int i=0; i<controlledPods.size(); ++i)
             {
-                break;
+                if (controlledPods[i] == NULL)
+                {
+                    controlledPods.erase(controlledPods.begin() + i);
+                    i--;
+                }
             }
         }
 

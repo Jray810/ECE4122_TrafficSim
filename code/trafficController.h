@@ -25,7 +25,9 @@
 #include <chrono>
 #include <queue>
 #include <map>
+#include <vector>
 #include <mutex>
+#include <omp.h>
 
 #define UPDATE_GAP_MS 100
 
@@ -124,7 +126,7 @@ public:
 protected:
     bool controllerActive;
     Intersection* thisIntersection;
-    std::map<std::string, Pod*> controlledPods;
+    std::deque<Pod*> controlledPods;
     std::map<std::string, std::deque<Pod*>> laneQueues;
     std::deque<Pod*> worldQueue;
     std::mutex protectControlledPods;

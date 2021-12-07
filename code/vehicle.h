@@ -15,6 +15,8 @@
  *      14NOV2021  R-11-14: Added entry constructor
  *      30NOV2021  R-11-30: Added traffic controller boolean
  *                          Adjusted position update methodology
+ *      06DEC2021  R-12-06: Added flag to check if vehicle has exited
+ *                          intersection
  * 
  **/
 
@@ -42,6 +44,7 @@ public:
             crashed = false;
             underTrafficControl = false;
             pod = NULL;
+            exited = false;
         }
 
     // Member Functions
@@ -128,6 +131,11 @@ public:
         pod = ptr;
     }
 
+    void exit()
+    {
+        exited = true;
+    }
+
     // Getters
     std::string getVehicleID(){return vehicleID;}
     void* getPod(){return pod;}
@@ -143,6 +151,7 @@ public:
     bool isTurning(){return currentTurning;}
     bool isCrashed(){return crashed;}
     bool isUnderTrafficControl(){return underTrafficControl;}
+    bool isExited(){return exited;}
 
 protected:
     std::string vehicleID;
@@ -167,6 +176,7 @@ protected:
 
     // Vehicle Control
     bool underTrafficControl;
+    bool exited;
 };
 
 #endif

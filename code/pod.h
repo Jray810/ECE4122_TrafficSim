@@ -15,6 +15,7 @@
  *                          Adjusted update position methodology
  *      04DEC2021  R-12-04: Added target entry handling
  *                          to support autonomous control
+ *      06DEC2021  R-12-06: Added destructor
  * 
  **/
 
@@ -43,6 +44,14 @@ public:
         inIntersectionSquare = false;
         positionInQueue = -1;
         obj->setPod(this);
+    }
+
+    // Destructors
+    ~Pod()
+    {
+        vehicle->setTrafficControl(false);
+        vehicle->setPod(NULL);
+        vehicle->exit();
     }
 
     // Member Functions
