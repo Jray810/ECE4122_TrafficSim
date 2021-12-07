@@ -15,17 +15,15 @@
  * 
  **/
 
+#include "debugSetup.h"
 #include <SFML/Graphics.hpp>
 #include <cmath>
-#include <stdlib.h>
-#include <time.h>
 
 #include "intersect4wsl.h"
 #include "autoTrafficController.h"
 #include "lightTrafficController.h"
 #include "stopTrafficController.h"
 
-#include "debugSetup.h"
 
 // Window Dimension Constants
 #define WINDOW_XDIM 1920

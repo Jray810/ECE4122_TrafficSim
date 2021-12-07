@@ -7,7 +7,8 @@
  * 
  * Description:
  *      Header file for including header files used for debugging
- *      as well as debugging parameters and flags.
+ *      as well as debugging parameters and flags. Should be included by
+ *      all files.
  * 
  * Revision History:
  *      07DEC2021  R-12-07: Document Created, initial coding
@@ -18,6 +19,9 @@
 #define DEBUGSETUP_H
 
 #include <iostream>
+#include <chrono>
+#include <stdlib.h>
+#include <time.h>
 
 #define DEBUGMODE 0
 

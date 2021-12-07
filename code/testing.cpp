@@ -1,8 +1,24 @@
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <stdlib.h>
-#include <time.h>
+/**
+ * Main
+ * 
+ * Authors: Marcus Chan, Raymond Jia
+ * Class: ECE 4122 - Hurley
+ * Final Project - Autonomous Traffic Simulator
+ * 
+ * Description:
+ *      Program for testing simulation situations.
+ *      No display support.
+ * 
+ * Revision History:
+ *      30NOV2021  R-11-30: Document Created, initial coding
+ *      04DEC2021  R-12-04: Added TEST_ADDVEHICLES and TEST_STOPCONTROLLER
+ *      06DEC2021  R-12-06: Added TEST_TRAFFICJAM
+ *      07DEC2021  R-12-07: Debugging and code cleanup
+ * 
+ **/
+
+#include "debugSetup.h"
+
 #include "intersect4wsl.h"
 #include "autoTrafficController.h"
 #include "lightTrafficController.h"
@@ -30,6 +46,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    // Set debug to true
+    DEBUG = true;
+
     // Seed RNG
     srand(time(NULL));
 
