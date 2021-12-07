@@ -49,6 +49,7 @@ public:
     // Destructors
     ~Pod()
     {
+        vehicle->setTrafficControl(false);
         vehicle->setPod(NULL);
         vehicle->exit();
     }

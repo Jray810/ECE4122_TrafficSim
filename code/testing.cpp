@@ -1,6 +1,8 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <stdlib.h>
+#include <time.h>
 #include "intersect4wsl.h"
 #include "autoTrafficController.h"
 #include "lightTrafficController.h"
@@ -23,6 +25,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    // Seed RNG
+    srand(time(NULL));
+
     // Command Line Argument Detection
     if (argc == 1)
     {
@@ -142,10 +147,11 @@ int main(int argc, char *argv[])
         cout << "Testing Traffic Jam\n";
         for (int i=0; i<10; ++i)
         {
-            Vehicle* testVehicle = new Vehicle(, 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode(std::to_string(dest)));
+            int dest = (rand() % 3) + 1;
+            Vehicle* testVehicle = new Vehicle(std::to_string(i), 10, 10, 1, theIntersection->getNode("0"), theIntersection->getNode(std::to_string(dest)));
             theTrafficController->entryQueue.push(testVehicle);
-            std::this_thread::sleep_for(std::chrono::seconds(30));
         }
+        std::this_thread::sleep_for(std::chrono::seconds(30));
     }
 
     // Cleanup

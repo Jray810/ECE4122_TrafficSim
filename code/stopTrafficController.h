@@ -39,7 +39,7 @@ public:
         Pod* entryPod = new Pod(entryVehicle, desiredLane, globalTime);
 
         // Add to controlled pods
-        controlledPods.insert({entryPod->getPodID(), entryPod});
+        controlledPods.push_back(entryPod);
         
         // Add pod to lane queue
         std::map<std::string, std::deque<Pod*>>::iterator it = laneQueues.find(src_node_id);
@@ -55,22 +55,23 @@ public:
 
     void doUpdate()
     {
-        std::map<std::string, Pod*>::iterator next_it = controlledPods.begin();
-        for (std::map<std::string, Pod*>::iterator it = controlledPods.begin(); it != controlledPods.end(); it = next_it)
+        bool popWorld = false;
+        bool leaveControl = false;
+        std::vector<std::string> popLane;
+
+        for (int i=0; i<controlledPods.size(); ++i)
         {
-            ++next_it;
-            std::string podID = it->first;
-            Pod* thisPod = it->second;
+            Pod* thisPod = controlledPods[i];
 
             // For debugging
-            std::cout << podID << " : " << thisPod->getPosition() << std::endl;
+            std::cout << thisPod->getPodID() << " : " << thisPod->getPosition() << std::endl;
 
             // Check if pod has left intersection control
             if (thisPod->getPosition() > thisPod->getLane()->getLaneLength())
             {
-                controlledPods.erase(it);
-                thisPod->getVehicle()->setTrafficControl(false);
+                controlledPods[i] = NULL;
                 delete thisPod;
+                leaveControl = true;
             }
             // Check if pod is beyond intersection but has not left yet
             else if (thisPod->getPosition() > thisPod->getLane()->getEndIntersection())
@@ -82,7 +83,7 @@ public:
             {
                 if (thisPod->getPosition() + thisPod->getLane()->getDestination()->speedLimit > thisPod->getLane()->getEndIntersection())
                 {
-                    worldQueue.pop_front();
+                    popWorld = true;
                 }
                 thisPod->updatePosition(thisPod->getLane()->getDestination()->speedLimit);
             }
@@ -100,12 +101,7 @@ public:
                     if (worldQueue.front()->getPodID() == thisPod->getPodID())
                     {
                         std::map<std::string, std::deque<Pod*>>::iterator laneIt = laneQueues.find(thisPod->getLane()->getSource()->nodeID);
-                        laneIt->second.pop_front();
-                        // Update queue positions
-                        for (int i=0; i<laneIt->second.size(); ++i)
-                        {
-                            laneIt->second[i]->setPositionInQueue(i);
-                        }
+                        popLane.push_back(thisPod->getLane()->getSource()->nodeID);
                         thisPod->updatePosition(thisPod->getLane()->getDestination()->speedLimit);                        
                     }
                     else
@@ -129,10 +125,36 @@ public:
             {
                 thisPod->updatePosition(thisPod->getLane()->getSource()->speedLimit);
             }
+        }
 
-            if (controlledPods.empty())
+        if (popWorld)
+        {
+            worldQueue.pop_front();
+        }
+
+        if (leaveControl)
+        {
+            for (int i=0; i<controlledPods.size(); ++i)
             {
-                break;
+                if (controlledPods[i] == NULL)
+                {
+                    controlledPods.erase(controlledPods.begin() + i);
+                    i--;
+                }
+            }
+        }
+        
+        if (!popLane.empty())
+        {
+            for (int i=0; i<popLane.size(); ++i)
+            {
+                std::deque<Pod*> laneToPop = laneQueues.find(popLane[i])->second;
+                laneToPop.pop_front();
+                // Update queue positions
+                for (int j=0; j<laneToPop.size(); ++j)
+                {
+                    laneToPop[j]->setPositionInQueue(j);
+                }
             }
         }
     }
