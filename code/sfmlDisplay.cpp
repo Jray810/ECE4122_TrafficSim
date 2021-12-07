@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
     textureCollection[7] = textureCow;
 
     // Setup Environment
-    double speedLimit = controllerType == STOP ? 1 : DEFAULT_SPEED_LIMIT;
+    double speedLimit = DEFAULT_SPEED_LIMIT;
     theIntersection = new Intersect4WSL(speedLimit);
     switch (controllerType)
     {

@@ -51,7 +51,7 @@ public:
     {
         vehicle->setTrafficControl(false);
         vehicle->setPod(NULL);
-        waitTime = exitstamp - timestamp - 50;
+        waitTime = exitstamp - timestamp - 12;
         vehicle->exit(waitTime);
     }
 
