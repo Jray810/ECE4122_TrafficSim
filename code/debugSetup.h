@@ -23,8 +23,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DEBUGMODE 0
-
-bool DEBUG = DEBUGMODE;
+#define DEBUG 0
 
 #endif
