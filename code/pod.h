@@ -40,7 +40,7 @@ public:
         targetSet = false;
         targetIntersectionEntry = -1;
         targetIntersectionExit = -1;
-        timeInIntersection = -1;
+        timeInIntersection = (ln->getEndIntersection() - ln->getBeginIntersection()) / ln->getDestination()->speedLimit;
         inIntersectionSquare = false;
         positionInQueue = -1;
         obj->setPod(this);
@@ -89,7 +89,6 @@ public:
     {
         unsigned long int timeDiff = desiredEntry - currentTime;
         countdown = 4*timeDiff - 4*(lane->getBeginIntersection()) / (lane->getSource()->speedLimit);
-        timeInIntersection = (lane->getEndIntersection() - lane->getBeginIntersection()) / lane->getDestination()->speedLimit;
         targetIntersectionEntry = desiredEntry;
         targetIntersectionExit = desiredEntry + timeInIntersection;
         targetSet = true;

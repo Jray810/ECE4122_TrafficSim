@@ -84,8 +84,8 @@ public:
                     case -1:
                         lane_id = std::to_string((i+1)%4) + "-" + std::to_string((j+3)%4);
                         thisLane->addAllowedLane(lane_id);
-                        lane_id = std::to_string((i+2)%4) + "-" + std::to_string((j+2)%4);
-                        thisLane->addAllowedLane(lane_id);
+                        // lane_id = std::to_string((i+2)%4) + "-" + std::to_string((j+2)%4);
+                        // thisLane->addAllowedLane(lane_id);
                         lane_id = std::to_string((i+3)%4) + "-" + std::to_string((j+1)%4);
                         thisLane->addAllowedLane(lane_id);
                         break;

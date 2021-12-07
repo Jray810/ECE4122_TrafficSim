@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     window.draw(titleText);
     window.display();
 
-    double s = 36;
+    double s = controllerType == AUTO ? 40 : 36;
     unsigned long int vehiclesProcessed = 0;
     double averageWait = 0;
 

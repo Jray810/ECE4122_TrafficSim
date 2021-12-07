@@ -69,8 +69,7 @@ public:
         
         // Add pod to lane queue
         std::map<std::string, std::vector<Pod*>>::iterator it = laneQueues.find(src_node_id);
-        unsigned long int earliestEntryTime = it->second.size() == 0 ? 0 : it->second.back()->getEntry() + 1;
-        unsigned long int timeInIntersection = entryPod->getTimeInIntersection();
+        unsigned long int earliestEntryTime = it->second.empty() ? 0 : it->second.back()->getEntry() + 1;
         if (entryPod->predictedEntry(globalTime) > earliestEntryTime)
         {
             earliestEntryTime = entryPod->predictedEntry(globalTime);
@@ -119,7 +118,7 @@ public:
                 {
                     // Current pod's entry point is greater than bannedExit
                     // Check if sufficient space between bannedExit and current pod entry for our pod
-                    if (thisPod->getEntry() - bannedExit >= timeInIntersection)
+                    if (thisPod->getEntry() - bannedExit >= entryPod->getTimeInIntersection())
                     {
                         setPodEntry(entryPod, bannedExit);
                         return;
@@ -161,7 +160,7 @@ public:
                 // std::cout << thisPod->getLane()->getLaneID() << " : " << thisPod->getPosition() << std::endl;
 
                 // Check if in slowed region
-                if (thisPod->getCountdown() > 0)
+                if (thisPod->getCountdown() > 0 && thisPod->getPosition() <= thisPod->getLane()->getBeginIntersection())
                 {
                     // std::cout << "Countdown: " << thisPod->getCountdown() << std::endl;
                     thisPod->updatePosition(thisPod->getLane()->getSource()->speedLimit*3/4);
