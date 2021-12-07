@@ -43,7 +43,7 @@ unsigned int controllerType;
 unsigned int tickSpeed;
 
 // Vehicle Spawn Chance per Iteration
-#define PROBABILITY 25
+#define DEFAULT_PROB 25
 unsigned int probability;
 
 // Fonts
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
      **/
     controllerType = AUTO;
     tickSpeed = DEFAULT_TICK_MICROS;
-    probability = PROBABILITY;
+    probability = DEFAULT_PROB;
     // Check for second command line argument (--help or Controller Type)
     if (argc >= 2)
     {
