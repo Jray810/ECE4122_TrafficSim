@@ -217,7 +217,7 @@ void AutoTrafficController::doUpdate()
             // Check if pod is beyond intersection but has not left yet
             else if (thisPod->getPosition() <= thisPod->getLane()->getLaneLength())
             {
-                // Cjecl of forst om world queue, if so, signal removal from world queue
+                // Check if first in world queue, if so, signal removal from world queue
                 if (!worldQueue.empty() && worldQueue[0]->getPodID() == thisPod->getPodID())
                 {
                     popWorld = true;
@@ -254,7 +254,7 @@ void AutoTrafficController::doUpdate()
             }
         }
     }
-    
+
     // Signal received to pop a lane queue
     if (!popLane.empty())
     {
