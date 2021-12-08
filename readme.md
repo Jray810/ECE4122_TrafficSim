@@ -38,6 +38,10 @@ You can also customize the probability (in percent) at which the simulation spaw
 ```
 $ ./trafficSim -A 1000 50
 ```
+If you need help with commands, run:
+```
+$ ./trafficSim --help
+```
 
 # Makefile Commands:
 To compile simulation for SFML display with executable trafficSim, run:
