@@ -21,14 +21,14 @@
 Lane::Lane(Node* src, Node* dest)
     :source(src), destination(dest), laneLength(DEFAULT_LANE_LENGTH), beginIntersection(DEFAULT_INTERSECTION_START), endIntersection(DEFAULT_INTERSECTION_END)
     {
-        laneID = src->nodeID + "_" + dest->nodeID;
+        laneID = src->nodeID + "-" + dest->nodeID;
     }
 
 // Constructor - Customizable Version
 Lane::Lane(Node* src, Node* dest, unsigned int length, unsigned int beginInt, unsigned int endInt)
     :source(src), destination(dest), laneLength(length), beginIntersection(beginInt), endIntersection(endInt)
     {
-        laneID = src->nodeID + "_" + dest->nodeID;
+        laneID = src->nodeID + "-" + dest->nodeID;
     }
 
 /**
