@@ -105,7 +105,18 @@ int main(int argc, char *argv[])
         // Help Support
         if (typeArg == "--help")
         {
-            // Print help information here -------------------------------------------------------------------
+            std::cout << "\nTraffic Control Simulator - Command Line Interface Instructions\n\n"
+                      << "Command line input format:\n"
+                      << "./trafficSim [-T] [-R] [-P]\n"
+                      << "Note that argument [-R] must come after a [-T] argument and a [-P] argument must come after both.\n\n"
+                      << "Arguments:\n"
+                      << "           [-T]: Traffic Control Simulation Type. Options are:\n"
+                      << "                 -A    Autonomous Simulation\n"
+                      << "                 -L    Traffic Light Controlled Simulation (Coming Soon!)\n"
+                      << "                 -S    Stop Sign Controlled Simulation\n"
+                      << "           [-R]: Tick Rate in microseconds. Input a positive integer.\n"
+                      << "           [-P]: Spawn Probably as a percent. Input a positive integer between 1 and 100.\n"
+                      << "With no arguments, the default operation is autonomous with tick speed 100ms and probabiliy of 25\n\n";
             return 0;
         }
         // Check Number of Characters
@@ -188,6 +199,14 @@ int main(int argc, char *argv[])
             }
         }
         probability = stoi(typeArg);
+        if (probability == 0 || probability > 100)
+        {
+            std::cerr << "Invalid Command Line Input!\n"
+                        << "Invalid probability of " << typeArg << std::endl
+                        << "Run --help for more info.\n"
+                        << "Quitting...\n";
+            return 1;
+        }
     }
     // Check for too many args
     if (argc > 4)
