@@ -1,3 +1,28 @@
+# Project Operation Instructions
+This project is in C++ and requires a G++ compiler as well as OpenMP and SFML support.
+
+All commands below are run in the main folder. We used Ubuntu 20.04 on Windows WSL and installed XMing for graphical support.
+
+*To Compile the Simulation*
+---
+
+make
+---
+or
+---
+
+g++ code/*.h code/*.cpp sfmlDisplay.cpp -lpthread -fopenmp -lsfml-graphics -lsfml-window -lsfml-system -o trafficSim
+---
+
+*To Run the Simulation*
+Make sure you start XMing first
+---
+
+export DISPLAY=:0.0
+./trafficSim [-T] [-R] [-P]
+---
+
+
 The Makefile contains the following commands:
 
 # $make all
