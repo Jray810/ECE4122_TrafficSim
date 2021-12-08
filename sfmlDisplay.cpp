@@ -60,6 +60,8 @@ std::vector<sf::Sprite*> spriteCollection;
 
 /**
  * Coord
+ * Description:
+ *          Data structure for holding cartesian coordinate information
  * Contains:
  *      double x - X coordinate of an object
  *      double y - Y coordinate of an object
