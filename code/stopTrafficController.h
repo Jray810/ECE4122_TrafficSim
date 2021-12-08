@@ -24,6 +24,11 @@
 
 #include "trafficController.h"
 
+/**
+ * StopTrafficController Class
+ * Description:
+ *          Class that simulates a stop sign controlled traffic controller
+ **/
 class StopTrafficController: public TrafficController
 {
 public:

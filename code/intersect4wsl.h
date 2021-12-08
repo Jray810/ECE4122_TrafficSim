@@ -17,12 +17,13 @@
 #ifndef INTERSECT4WSL_H
 #define INTERSECT4WSL_H
 
-#define DEFAULT_LANE_LENGTH 50
-#define DEFAULT_INTERSECTION_START 20
-#define DEFAULT_INTERSECTION_END 30
-
 #include "intersection.h"
 
+/**
+ * Intersect4WSL Class
+ * Description:
+ *          Class that simulates a 4-way single lane intersection
+ **/
 class Intersect4WSL: public Intersection
 {
 public:

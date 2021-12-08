@@ -45,7 +45,6 @@ Intersect4WSL::Intersect4WSL(unsigned int speedLimit)
                 // Create and initialize new lane
                 Lane* thisLane = new Lane(intersectionNodes[i], intersectionNodes[j], DEFAULT_LANE_LENGTH, DEFAULT_INTERSECTION_START, DEFAULT_INTERSECTION_END);
                 std::string lane_id = std::to_string(i) + "-" + std::to_string(j);
-                thisLane->setLaneID(lane_id);
                 // Add lane to lane vector
                 intersectionLanes.push_back(thisLane);
 

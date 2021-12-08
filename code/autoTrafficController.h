@@ -24,6 +24,11 @@
 
 #include "trafficController.h"
 
+/**
+ * AutoTrafficController Class
+ * Description:
+ *          Class that simulates an autonomously scheduled traffic controller
+ **/
 class AutoTrafficController: public TrafficController
 {
 public:

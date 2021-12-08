@@ -19,6 +19,11 @@
 
 #include "trafficController.h"
 
+/**
+ * LightTrafficController Class
+ * Description:
+ *          Class that simulates a traffic light controlled traffic controller
+ **/
 class LightTrafficController: public TrafficController
 {
 public:

@@ -21,6 +21,11 @@
 
 #include "lane.h"
 
+/**
+ * Intersection Class
+ * Description:
+ *          Class that simulates a basic intersection
+ **/
 class Intersection
 {
 public:
