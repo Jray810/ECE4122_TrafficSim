@@ -1,7 +1,7 @@
 # Project Description
 This project is a simulation of a four way traffic intersection and a measurement of traffic flow across the intersection. This project was inspired by MIT’s Senseable City Lab - Light Traffic (http://senseable.mit.edu/light-traffic/). The project investigates and compares the traffic flow between existing Stop-Sign infrastructure and fully Autonomous intersection control. Ultimately, this project has the potential to be used as a possible framework for future investigations into autonomous traffic intersections.
 
-A video demonstration of the existing project can be found here: 
+A video demonstration of the existing project can be found here: https://youtu.be/MKxbEseK9wA
 
 # Project Operation Instructions
 This project is in C++ and requires a G++ compiler as well as OpenMP and SFML support.
