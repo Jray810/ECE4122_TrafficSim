@@ -115,8 +115,8 @@ int main(int argc, char *argv[])
                       << "                 -L    Traffic Light Controlled Simulation (Coming Soon!)\n"
                       << "                 -S    Stop Sign Controlled Simulation\n"
                       << "           [-R]: Tick Rate in microseconds. Input a positive integer.\n"
-                      << "           [-P]: Spawn Probably as a percent. Input a positive integer between 1 and 100.\n"
-                      << "With no arguments, the default operation is autonomous with tick speed 100ms and probabiliy of 25\n\n";
+                      << "           [-P]: Spawn Probability as a percent. Input a positive integer between 1 and 100.\n"
+                      << "With no arguments, the default operation is autonomous with tick speed 100ms and probability of 25\n\n";
             return 0;
         }
         // Check Number of Characters
