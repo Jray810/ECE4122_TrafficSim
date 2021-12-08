@@ -16,6 +16,7 @@
  *      04DEC2021  R-12-04: Added target entry handling
  *                          to support autonomous control
  *      06DEC2021  R-12-06: Added destructor
+ *      07DEC2021  R-12-07: Debugging and code cleanup
  * 
  **/
 
@@ -25,87 +26,34 @@
 #include "vehicle.h"
 #include <ctime>
 
+/**
+ * Pod Class
+ * Description:
+ *          Class that simulates a pod communicating between traffic controller and vehicle
+ **/
 class Pod
 {
 public:
     // Constructors
-    Pod(Vehicle* obj, Lane* ln, unsigned long int timeAdded = -1):vehicle(obj), lane(ln)
-    {
-        timestamp = timeAdded;
-        podID = obj->getVehicleID();
-        position = 0;
-        move = false;
-        countdown = -1;
-        targetSet = false;
-        targetIntersectionEntry = -1;
-        targetIntersectionExit = -1;
-        timeInIntersection = (ln->getEndIntersection() - ln->getBeginIntersection()) / ln->getDestination()->speedLimit;
-        inIntersectionSquare = false;
-        positionInQueue = -1;
-        obj->setPod(this);
-    }
+    Pod(Vehicle* obj, Lane* ln, unsigned long int timeAdded = -1);
 
     // Destructors
-    ~Pod()
-    {
-        vehicle->setTrafficControl(false);
-        vehicle->setPod(NULL);
-        waitTime = exitstamp - timestamp - 12;
-        vehicle->exit(waitTime);
-    }
+    ~Pod();
 
     // Member Functions
-    unsigned long int predictedEntry(unsigned long int currentTime)
-    {
-        double distance = lane->getBeginIntersection();
-        double speedLimit = lane->getSource()->speedLimit;
-        unsigned long int entryTime = currentTime + (distance / speedLimit);
-        return entryTime;
-    }
-
-    void updatePosition(int speed, int cntdown = -1)
-    {
-        if (cntdown != -1)
-        {
-            countdown = cntdown;
-        }
-        else if (countdown > 0)
-        {
-            countdown--;
-        }
-
-        move = speed > 0;
-
-        if (move)
-        {
-            position += vehicle->update(speed);
-        }
-
-        inIntersectionSquare = (position > lane->getBeginIntersection() && position <= lane->getEndIntersection()) ? true : false;
-    }
-
-    void setTarget(unsigned long int desiredEntry, unsigned long int currentTime)
-    {
-        unsigned long int timeDiff = desiredEntry - currentTime;
-        countdown = 4*timeDiff - 4*(lane->getBeginIntersection()) / (lane->getSource()->speedLimit);
-        targetIntersectionEntry = desiredEntry;
-        targetIntersectionExit = desiredEntry + timeInIntersection;
-        targetSet = true;
-    }
+    unsigned long int predictedEntry(unsigned long int currentTime);
+    void updatePosition(int speed, int cntdown = -1);
+    void setTarget(unsigned long int desiredEntry, unsigned long int currentTime);
     
-    void setPositionInQueue(int pos)
-    {
-        positionInQueue = pos;
-    }
-
-    void setExitStamp(unsigned long int exit)
-    {
-        exitstamp = exit;
-    }
+    // Setters
+    void setPositionInQueue(int pos){positionInQueue = pos;}
+    void setExitStamp(unsigned long int exit){exitstamp = exit;}
 
     // Getters
     std::string getPodID(){return podID;}
     unsigned long int getTimestamp(){return timestamp;}
+    unsigned long int getExitstamp(){return exitstamp;}
+    unsigned long int getWaitTime(){return waitTime;}
     Vehicle* getVehicle(){return vehicle;}
     Lane* getLane(){return lane;}
     double getPosition(){return position;}
@@ -118,27 +66,27 @@ public:
     int getPositionInQueue(){return positionInQueue;}
 
 private:
-    std::string podID;
-    unsigned long int timestamp;
-    unsigned long int exitstamp;
-    unsigned long int waitTime;
-    Vehicle* vehicle;
-    Lane* lane;
-    double position;
+    std::string podID;              // Unique pod identifier
+    unsigned long int timestamp;    // Entry timestamp
+    unsigned long int exitstamp;    // Exit timestamp
+    unsigned long int waitTime;     // Exit - Entry - Expected delay
+    Vehicle* vehicle;               // Pointer to vehicle it controls
+    Lane* lane;                     // Pointer to lane it is in
+    double position;                // Linear position in lane
 
     // Instructors
-    bool move;
-    int countdown;
+    bool move;                      // Check if pod is moving
+    int countdown;                  // Countdown for speed adjustment
 
     // Targets
-    bool targetSet;
-    unsigned long int targetIntersectionEntry;
-    unsigned long int targetIntersectionExit;
-    unsigned long int timeInIntersection;
+    bool targetSet;                             // Check if a target is set
+    unsigned long int targetIntersectionEntry;  // Intersection entry target
+    unsigned long int targetIntersectionExit;   // Intersection exit target
+    unsigned long int timeInIntersection;       // Expected time in intersection
 
     // Status
-    bool inIntersectionSquare;
-    int positionInQueue;
+    bool inIntersectionSquare;      // Check if pod is in intersection square
+    int positionInQueue;            // Position of pod in its lane queue
 };
 
 #endif
