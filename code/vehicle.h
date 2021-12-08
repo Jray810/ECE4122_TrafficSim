@@ -17,6 +17,7 @@
  *                          Adjusted position update methodology
  *      06DEC2021  R-12-06: Added flag to check if vehicle has exited
  *                          intersection
+ *      07DEC2021  R-12-07: Debugging and code cleanup
  * 
  **/
 
@@ -29,113 +30,24 @@
 #define MAINTAIN 1
 #define SPEED_UP 2
 
+/**
+ * Vehicle Class
+ * Description:
+ *          Class that simulates a vehicle. Vehicle is not self aware of position
+ **/
 class Vehicle
 {
 public:
     // Constructors
-    Vehicle(std::string id, double mS, double mTS, double a, Node* src, Node* dest):
-        vehicleID(id), maxSpeed(mS), maxTurnSpeed(mTS), acceleration(a), source(src), destination(dest)
-        {
-            initialSpeed = source->speedLimit;
-            currentSpeed = initialSpeed;
-            initialAcceleration = 0;
-            currentAcceleration = 0;
-            currentTurning = false;
-            crashed = false;
-            underTrafficControl = false;
-            pod = NULL;
-            exited = false;
-        }
+    Vehicle(std::string id, double mS, double mTS, double a, Node* src, Node* dest);
 
     // Member Functions
-    bool instruct(unsigned int instruction)
-    {
-        switch (instruction)
-        {
-            case SLOW_DOWN:
-                if (acceleration != -1)
-                {
-                    acceleration = -1;
-                    return true;
-                }
-                break;
-            case MAINTAIN:
-                if (acceleration != 0)
-                {
-                    acceleration = 0;
-                    return true;
-                }
-                break;
-            case SPEED_UP:
-                if (acceleration != 1)
-                {
-                    acceleration = 1;
-                    return true;
-                }
-                break;
-            default:
-                return false;
-                break;
-        }
-    }
-
-    double update(int speed)
-    {
-        /*
-        double distTraveled = 0.5 * currentAcceleration * acceleration + currentSpeed;
-
-        currentSpeed = currentAcceleration * acceleration + currentSpeed;
-        if (currentTurning)
-        {
-            if (currentSpeed > maxTurnSpeed)
-            {
-                currentSpeed = maxTurnSpeed;
-            }
-            else if (currentSpeed < maxTurnSpeed * -1)
-            {
-                currentSpeed = maxTurnSpeed * -1;
-            }
-
-        }
-        else
-        {
-            if (currentSpeed > maxSpeed)
-            {
-                currentSpeed = maxSpeed;
-            }
-            else if (currentSpeed < maxSpeed * -1)
-            {
-                currentSpeed = maxSpeed * -1;
-            }
-        }
-        */
-        currentSpeed = speed;
-        double distTraveled = currentSpeed;
-
-        return distTraveled;
-    }
+    double update(double speed);
+    void exit(unsigned long int wait);
 
     // Setters
-    void setTurning(bool turning)
-    {
-        currentTurning = turning;
-    }
-
-    void setTrafficControl(bool control)
-    {
-        underTrafficControl = control;
-    }
-
-    void setPod(void* ptr)
-    {
-        pod = ptr;
-    }
-
-    void exit(unsigned long int wait)
-    {
-        exited = true;
-        waitTime = wait;
-    }
+    void setTrafficControl(bool control){underTrafficControl = control;}
+    void setPod(void* ptr){pod = ptr;}
 
     // Getters
     std::string getVehicleID(){return vehicleID;}
@@ -156,30 +68,30 @@ public:
     bool isExited(){return exited;}
 
 protected:
-    std::string vehicleID;
-    void* pod;
-    double waitTime;
+    std::string vehicleID;          // Unique vehicle identifier
+    void* pod;                      // Pointer to pod
+    double waitTime;                // Time delayed in intersection
 
     // Vehicle Properties
-    double maxSpeed;
-    double maxTurnSpeed;
-    double acceleration;
+    double maxSpeed;                // Maximum speed capability
+    double maxTurnSpeed;            // Maximum turning speed capability
+    double acceleration;            // Acceleration constant
 
     // Vehicle Initial State
-    double initialSpeed;
-    double initialAcceleration;
-    Node* source;
-    Node* destination;
+    double initialSpeed;            // Initial speed upon existence
+    double initialAcceleration;     // Initial acceleration upon existence
+    Node* source;                   // Source node
+    Node* destination;              // Destination node
 
     // Vehicle Current State
-    double currentSpeed;
-    double currentAcceleration;
-    bool currentTurning;
-    bool crashed;
+    double currentSpeed;            // Current speed
+    double currentAcceleration;     // Current acceleration
+    bool currentTurning;            // Whether or not vehicle is turning
+    bool crashed;                   // Whether or not vehicle has been involved in a collision
 
     // Vehicle Control
-    bool underTrafficControl;
-    bool exited;
+    bool underTrafficControl;       // Whether or not vehicle is under traffic controller control
+    bool exited;                    // Whether or not vehicle has exited traffic controller control
 };
 
 #endif
