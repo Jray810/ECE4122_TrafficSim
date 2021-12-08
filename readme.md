@@ -22,7 +22,21 @@ $ g++ code/*.h code/*.cpp sfmlDisplay.cpp -lpthread -fopenmp -lsfml-graphics -ls
 To run the simulation, make sure you start XMing first:
 ```
 $ export DISPLAY=:0.0
-$ ./trafficSim [-T] [-R] [-P]
+$ ./trafficSim
+```
+You can also customize which traffic controller simulation you want to run (Autonomous by default):
+```
+$ ./trafficSim -A   # For autonomous version
+$ ./trafficSim -L   # For traffic light version (Currently unsupported)
+$ ./trafficSim -S   # For stop sign version
+```
+You can also customize the tick speed at which the simulation is running at (100 ms by default). Your input value will be in microseconds and must be the third command line argument (after traffic controller type selection). For example here is an autonomous version with tick speed of 1 second:
+```
+$ ./trafficSim -A 1000000
+```
+You can also customize the probability (in percent) at which the simulation spawns a vehicle per tick. Your input value will be a whole number between 1 and 100 inclusive and must be the fourth command line argument. For example here is an autonomous version with tick speed of 1 ms and probability of 50%:
+```
+$ ./trafficSim -A 1000 50
 ```
 
 # Makefile Commands:
